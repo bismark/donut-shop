@@ -22,7 +22,9 @@ defmodule DonutShop.MixProject do
     [
       {:jason, "~> 1.4"},
       {:phoenix_live_view, "~> 0.18.3"},
-      {:ecto_sqlite3, "~> 0.9.0"}
+      {:ecto_sqlite3, "~> 0.9.0"},
+      {:plug, "~> 1.14"},
+      {:bandit, "~> 0.6.4"}
     ]
   end
 end

@@ -1,5 +1,6 @@
 defmodule DonutShop.Template do
   require EEx
+  import Ecto.Query
   use Phoenix.Component
   alias DonutShop.{Post, Repo}
 
@@ -47,7 +48,7 @@ defmodule DonutShop.Template do
       <div id="about">
         <div id="hcard-Ryan-Johnson" class="h-card">
           <img class="u-photo" alt="avatar" src="/avatar.svg" />
-          - Copyright <a class="p-name u-url" rel="author" href="https://iambismark.net/">Ryan Johnson</a>, 2005-2018 -
+          - Copyright <a class="p-name u-url" rel="author" href="https://iambismark.net/">Ryan Johnson</a>, 2005-<%= current_year() %> -
           <a class="u-email" href="mailto:ryan@iambismark.net">ryan@iambismark.net</a>
         </div>
       </div>
@@ -94,7 +95,7 @@ defmodule DonutShop.Template do
         <h2 class="p-name"><%= title %></h2>
       <% end %>
       <div class={@content_class}>
-        <%= @post.text %>
+        <p><%= @post.text %></p>
       </div>
       <a class="u-uid u-url" href={permalink(@post)}>
         <time class="dt-published" datetime={DateTime.to_iso8601(@post.created_at) <> "Z"}>
@@ -114,6 +115,67 @@ defmodule DonutShop.Template do
       <.head title={(@post.title || "Post") <> "| I Am Bismark"} />
       <.body>
         <.article post={@post} />
+      </.body>
+    </.html>
+    """
+  end
+
+  defp archive_counts() do
+    Repo.all(
+      from(
+        p in Post,
+        group_by: fragment(~s|STRFTIME('%Y-%m', ?)|, p.created_at),
+        select: {fragment(~s|STRFTIME('%Y-%m', ?)|, p.created_at), count(p.id)}
+      )
+    )
+  end
+
+  defp archive_page(assigns) do
+    ~H"""
+    <.html>
+      <.head title="Archive | I Am Bismark" /> j
+      <.body>
+        <h1>Archive</h1>
+        <ul>
+          <%= for {date, count} <- archive_counts() do %>
+            <li><a {[href: date <> "/"]}><%= date %></a> (<%= count %>)</li>
+          <% end %>
+        </ul>
+      </.body>
+    </.html>
+    """
+  end
+
+  defp archive_months() do
+    Repo.all(
+      from(
+        p in Post,
+        distinct: true,
+        select: fragment(~s|STRFTIME('%Y-%m', ?)|, p.created_at)
+      )
+    )
+  end
+
+  defp archive_month_posts(month) do
+    Repo.all(
+      from(
+        p in Post,
+        where: fragment("STRFTIME('%Y-%m', ?)", p.created_at) == ^month
+      )
+    )
+  end
+
+  attr :month, :string, required: true
+
+  defp archive_month_page(assigns) do
+    ~H"""
+    <.html>
+      <.head title="#{@month} | I Am Bismark" />
+      <.body>
+        <h1><%= @month %></h1>
+        <%= for post <- archive_month_posts(@month) do %>
+          <.article post={post} />
+        <% end %>
       </.body>
     </.html>
     """
@@ -160,6 +222,30 @@ defmodule DonutShop.Template do
       end)
     end)
 
+    archive_path = Path.join(@output_dir, "archive")
+    File.mkdir_p!(archive_path)
+
+    archive_page(%{})
+    |> Phoenix.HTML.Safe.to_iodata()
+    |> then(fn html ->
+      File.write!(Path.join(archive_path, "index.html"), html)
+    end)
+
+    Enum.each(archive_months(), fn month ->
+      month_path = Path.join(archive_path, month)
+      File.mkdir_p!(month_path)
+
+      archive_month_page(%{month: month})
+      |> Phoenix.HTML.Safe.to_iodata()
+      |> then(fn html ->
+        File.write!(Path.join(month_path, "index.html"), html)
+      end)
+    end)
+
     File.cp_r!(@static_dir, @output_dir)
+  end
+
+  defp current_year() do
+    Date.utc_today().year
   end
 end

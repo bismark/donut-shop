@@ -6,7 +6,8 @@ defmodule DonutShop.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      DonutShop.Repo
+      DonutShop.Repo,
+      {Bandit, plug: DonutShop.DevServer, scheme: :http, options: [port: 4000]}
     ]
 
     opts = [strategy: :one_for_one, name: DonutShop.Supervisor]
