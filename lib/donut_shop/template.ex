@@ -34,7 +34,7 @@ defmodule DonutShop.Template do
   defp header(assigns) do
     ~H"""
     <header>
-      <h1>I Am Bismark</h1>
+      <h1><%= title() %></h1>
     </header>
     """
   end
@@ -112,7 +112,7 @@ defmodule DonutShop.Template do
   defp post_page(assigns) do
     ~H"""
     <.html>
-      <.head title={(@post.title || "Post") <> "| I Am Bismark"} />
+      <.head title={(@post.title || "Post") <> " | " <> title()} />
       <.body>
         <.article post={@post} />
       </.body>
@@ -133,7 +133,7 @@ defmodule DonutShop.Template do
   defp archive_page(assigns) do
     ~H"""
     <.html>
-      <.head title="Archive | I Am Bismark" /> j
+      <.head title={"Archive | " <> title()} /> j
       <.body>
         <h1>Archive</h1>
         <ul>
@@ -170,7 +170,7 @@ defmodule DonutShop.Template do
   defp archive_month_page(assigns) do
     ~H"""
     <.html>
-      <.head title="#{@month} | I Am Bismark" />
+      <.head title={@month <> " | " <> title()} />
       <.body>
         <h1><%= @month %></h1>
         <%= for post <- archive_month_posts(@month) do %>
@@ -186,7 +186,7 @@ defmodule DonutShop.Template do
   defp index(assigns) do
     ~H"""
     <.html>
-      <.head title="I Am Bismark" />
+      <.head title={title()} />
       <.body>
         Hello <%= @name %>
       </.body>
@@ -247,5 +247,9 @@ defmodule DonutShop.Template do
 
   defp current_year() do
     Date.utc_today().year
+  end
+
+  defp title() do
+    "I Am Bismark"
   end
 end
