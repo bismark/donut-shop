@@ -30,3 +30,5 @@ donut_shop-*.tar
 # sqlite3 temp files
 *.db-shm
 *.db-wal
+
+/data/

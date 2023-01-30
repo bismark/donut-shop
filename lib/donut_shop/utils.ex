@@ -15,4 +15,12 @@ defmodule DonutShop.Utils do
       {:error, err} -> raise err
     end
   end
+
+  @spec file_sha256(Path.t()) :: String.t()
+  def file_sha256(path) do
+    File.stream!(path, [], 2048)
+    |> Enum.reduce(:crypto.hash_init(:sha256), fn line, acc -> :crypto.hash_update(acc, line) end)
+    |> :crypto.hash_final()
+    |> Base.encode16(case: :lower)
+  end
 end

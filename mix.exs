@@ -25,7 +25,9 @@ defmodule DonutShop.MixProject do
       {:ecto_sqlite3, "~> 0.9.0"},
       {:plug, "~> 1.14"},
       {:bandit, "~> 0.6.4"},
-      {:credo, "~> 1.6"}
+      {:credo, "~> 1.6", only: [:dev], runtime: false},
+      {:dialyxir, "~> 1.2", only: [:dev], runtime: false},
+      {:finch, "~> 0.14.0"}
     ]
   end
 end

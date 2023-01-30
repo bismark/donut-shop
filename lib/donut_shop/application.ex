@@ -7,6 +7,7 @@ defmodule DonutShop.Application do
   def start(_type, _args) do
     children = [
       DonutShop.Repo,
+      {Finch, name: DonutShop.Finch},
       {Bandit, plug: DonutShop.DevServer, scheme: :http, options: [port: 4000]}
     ]
 
