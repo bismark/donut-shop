@@ -22,12 +22,14 @@ defmodule DonutShop.MixProject do
     [
       {:jason, "~> 1.4"},
       {:phoenix_live_view, "~> 0.18.3"},
-      {:ecto_sqlite3, "~> 0.9.0"},
+      # {:ecto_sqlite3, "~> 0.9.0"},
+      {:etso, "~> 1.1"},
       {:plug, "~> 1.14"},
       {:bandit, "~> 0.6.4"},
       {:credo, "~> 1.6", only: [:dev], runtime: false},
       {:dialyxir, "~> 1.2", only: [:dev], runtime: false},
-      {:finch, "~> 0.14.0"}
+      {:finch, "~> 0.14.0"},
+      {:toml, "~> 0.7.0"}
     ]
   end
 end

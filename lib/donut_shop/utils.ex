@@ -23,4 +23,17 @@ defmodule DonutShop.Utils do
     |> :crypto.hash_final()
     |> Base.encode16(case: :lower)
   end
+
+  def map_move(map, from, to) do
+    with {:ok, val} = Map.fetch(map, from) do
+      map
+      |> Map.delete(from)
+      |> Map.put(to, val)
+    end
+  end
+  
+  def map_move!(map, from, to) do
+    {val, map} = Map.pop!(map, from)
+    Map.put(map, to, val)
+  end
 end

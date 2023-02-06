@@ -1,5 +1,7 @@
 import Config
 
+config :donut_shop, DonutShop.Template, output_path: System.fetch_env!("OUTPUT_PATH")
+
 config :donut_shop, DonutShop.Repo,
   database: Path.join(:code.priv_dir(:donut_shop), "database.db")
 

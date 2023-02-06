@@ -4,7 +4,6 @@ defmodule DonutShop.Template do
   use Phoenix.Component
   alias DonutShop.{Post, Repo}
 
-  @output_dir Path.join(:code.priv_dir(:donut_shop), "output")
   @static_dir Path.join(:code.priv_dir(:donut_shop), "static")
 
   slot :inner_block, required: true
@@ -195,16 +194,18 @@ defmodule DonutShop.Template do
   end
 
   def run() do
-    File.mkdir_p!(@output_dir)
+    output_path = Application.get_env(:grain, __MODULE__) |> Keyword.fetch!(:output_path)
+
+    File.mkdir_p!(output_path)
 
     %{name: "Ryan"}
     |> index()
     |> Phoenix.HTML.Safe.to_iodata()
     |> then(fn html ->
-      File.write!(Path.join(@output_dir, "index.html"), html)
+      File.write!(Path.join(output_path, "index.html"), html)
     end)
 
-    posts_path = Path.join(@output_dir, "post")
+    posts_path = Path.join(output_path, "post")
     File.mkdir_p!(posts_path)
 
     Post
@@ -222,7 +223,7 @@ defmodule DonutShop.Template do
       end)
     end)
 
-    archive_path = Path.join(@output_dir, "archive")
+    archive_path = Path.join(output_path, "archive")
     File.mkdir_p!(archive_path)
 
     archive_page(%{})
@@ -242,7 +243,7 @@ defmodule DonutShop.Template do
       end)
     end)
 
-    File.cp_r!(@static_dir, @output_dir)
+    File.cp_r!(@static_dir, output_path)
   end
 
   defp current_year() do
